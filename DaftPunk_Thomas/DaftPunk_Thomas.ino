@@ -17,23 +17,23 @@ void setup() {
   clock_prescale_set(clock_div_1);
 #endif
 
-  initialize();       
-  clearStrip(earRings);
-  clearStrip(visorStrip);  
-  Serial.begin(9600);        
+  visorStrip.begin();
+  visorStrip.show();
+  earRings.begin();
+  earRings.show();
 }
 
 void loop() {
-  colorWipe(earRings, earRings.Color(255,   0,   0), 50); // Red
-  colorWipe(earRings, earRings.Color(  0, 255,   0), 50); // Green
-  colorWipe(earRings, earRings.Color(  0,   0, 255), 50); // Blue
-//
-//  theaterChase(strip.Color(127, 127, 127), 50); // White, half brightness
-//  theaterChase(strip.Color(127,   0,   0), 50); // Red, half brightness
-//  theaterChase(strip.Color(  0,   0, 127), 50); // Blue, half brightness
-//
-//  rainbow(earRings, 10);             // Flowing rainbow cycle along the whole strip
-//  theaterChaseRainbow(50); // Rainbow-enhanced theaterChase variant
+//  colorWipe(visorStrip, visorStrip.Color(255,   0,   0), 10); // Red
+//  colorWipe(visorStrip, visorStrip.Color(  0, 255,   0), 10); // Green
+//  colorWipe(visorStrip, visorStrip.Color(  0,   0, 255), 10); // Blue
+  
+//  theaterChase(visorStrip, visorStrip.Color(0, 127, 0), 50); // White, half brightness
+//  theaterChase(visorStrip, visorStrip.Color(127,   0,   0), 50); // Red, half brightness
+//  theaterChase(visorStrip, visorStrip.Color(  0,   0, 127), 50); // Blue, half brightness
+
+//  rainbow(visorStrip, 10);             // Flowing rainbow cycle along the whole strip
+//  theaterChaseRainbow(visorStrip, 50); // Rainbow-enhanced theaterChase variants
 }
 
 
@@ -43,9 +43,13 @@ void colorWipe(Adafruit_NeoPixel strip, uint32_t color, int wait) {
     strip.setPixelColor(i, color);         //  Set pixel's color (in RAM)
     strip.show();                          //  Update strip to match
     delay(wait);                           //  Pause for a moment
+    strip.begin();
   }
 }
 
+// Theater-marquee-style chasing lights. Pass in a color (32-bit value,
+// a la strip.Color(r,g,b) as mentioned above), and a delay time (in ms)
+// between frames.
 void theaterChase(Adafruit_NeoPixel strip, uint32_t color, int wait) {
   for(int a=0; a<10; a++) {  // Repeat 10 times...
     for(int b=0; b<3; b++) { //  'b' counts from 0 to 2...
@@ -57,20 +61,36 @@ void theaterChase(Adafruit_NeoPixel strip, uint32_t color, int wait) {
       strip.show(); // Update strip with new contents
       delay(wait);  // Pause for a moment
     }
+    strip.begin();
   }
 }
 
-void rainbow(Adafruit_NeoPixel strip,int wait) {
+// Rainbow cycle along whole strip. Pass delay time (in ms) between frames.
+void rainbow(Adafruit_NeoPixel strip, int wait) {
+  // Hue of first pixel runs 5 complete loops through the color wheel.
+  // Color wheel has a range of 65536 but it's OK if we roll over, so
+  // just count from 0 to 5*65536. Adding 256 to firstPixelHue each time
+  // means we'll make 5*65536/256 = 1280 passes through this outer loop:
   for(long firstPixelHue = 0; firstPixelHue < 5*65536; firstPixelHue += 256) {
     for(int i=0; i<strip.numPixels(); i++) { // For each pixel in strip...
+      // Offset pixel hue by an amount to make one full revolution of the
+      // color wheel (range of 65536) along the length of the strip
+      // (strip.numPixels() steps):
       int pixelHue = firstPixelHue + (i * 65536L / strip.numPixels());
+      // strip.ColorHSV() can take 1 or 3 arguments: a hue (0 to 65535) or
+      // optionally add saturation and value (brightness) (each 0 to 255).
+      // Here we're using just the single-argument hue variant. The result
+      // is passed through strip.gamma32() to provide 'truer' colors
+      // before assigning to each pixel:
       strip.setPixelColor(i, strip.gamma32(strip.ColorHSV(pixelHue)));
     }
     strip.show(); // Update strip with new contents
     delay(wait);  // Pause for a moment
+      strip.begin();
   }
 }
 
+// Rainbow-enhanced theater marquee. Pass delay time (in ms) between frames.
 void theaterChaseRainbow(Adafruit_NeoPixel strip, int wait) {
   int firstPixelHue = 0;     // First pixel starts at red (hue 0)
   for(int a=0; a<30; a++) {  // Repeat 30 times...
@@ -89,16 +109,6 @@ void theaterChaseRainbow(Adafruit_NeoPixel strip, int wait) {
       delay(wait);                 // Pause for a moment
       firstPixelHue += 65536 / 90; // One cycle of color wheel over 90 frames
     }
+      strip.begin();
   }
-}
-
-void initialize() {
-  visorStrip.begin();
-  visorStrip.setBrightness(100);
-  earRings.begin();  
-  earRings.setBrightness(100);
-}
-
-void clearStrip(Adafruit_NeoPixel strip) {
-  strip.show();
 }
