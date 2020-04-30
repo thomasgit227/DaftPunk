@@ -28,9 +28,19 @@ void setup() {
 
 void loop() {
 
-  visorStrip.begin();
-  
-  visorSequence(visorStrip);
+  int selection = random(0, 4);
+  if(selection == 0) {
+      visorSequenceA(visorStrip);
+  }
+  else if (selection == 1) {
+    visorSequenceB(visorStrip);
+  }
+  else if (selection == 2) {
+      theaterChase(visorStrip, visorStrip.Color(255,10,0), 75);
+  }
+  else {
+      visorSequenceC(visorStrip);
+  }
 
 }
 
@@ -95,7 +105,8 @@ void updateRainbow() {
   earRings.begin();
 }
 
-void visorSequence(Adafruit_NeoPixel strip) {
+void visorSequenceA(Adafruit_NeoPixel strip) {
+  visorStrip.begin();
   for(int i = 0; i < strip.numPixels()/4; i++) {
     strip.setPixelColor(i, strip.Color(255,10,0)); //Q2
     strip.setPixelColor(strip.numPixels()-i-1, strip.Color(255,10,0)); //Q4
@@ -112,7 +123,70 @@ void visorSequence(Adafruit_NeoPixel strip) {
     strip.setPixelColor(strip.numPixels()/2+i, strip.Color(0,0,0)); //Q3  
     updateRainbow();             
     strip.show();                          
-    delay(20);                           
+    delay(50);                           
   }
   delay(200);
+}
+
+void visorSequenceB(Adafruit_NeoPixel strip) {
+  visorStrip.begin();
+  for(int i = 0; i < strip.numPixels()/2; i++) {
+    strip.setPixelColor(i, strip.Color(255,10,0)); 
+    strip.setPixelColor(i + strip.numPixels()/2 , strip.Color(255,10,0)); 
+    updateRainbow();
+    strip.show();                          
+    delay(30);                           
+  }
+  for(int i = 0; i < strip.numPixels()/2; i++) {
+    strip.setPixelColor(i, strip.Color(0,0,0)); 
+    strip.setPixelColor(i + strip.numPixels()/2 , strip.Color(0,0,0)); 
+    updateRainbow();             
+    strip.show();                          
+    delay(30);                           
+  }
+  for(int i = 0; i < strip.numPixels()/2; i++) {
+    strip.setPixelColor(i, strip.Color(255,10,0)); 
+    strip.setPixelColor(i + strip.numPixels()/2 , strip.Color(255,10,0)); 
+    updateRainbow();             
+    strip.show();                          
+    delay(30);                           
+  }
+  for(int i = 0; i < strip.numPixels()/2; i++) {
+    strip.setPixelColor(i, strip.Color(0,0,0)); 
+    strip.setPixelColor(i + strip.numPixels()/2 , strip.Color(0,0,0)); 
+    updateRainbow();
+    strip.show();                          
+    delay(30);                           
+  }
+}
+
+void visorSequenceC(Adafruit_NeoPixel strip) {
+  int barSize = 6;
+  int stripLength = strip.numPixels();
+  int stripQuad = strip.numPixels()/4;
+  visorStrip.begin();
+  
+  for(int i = 0; i < stripQuad * 2; i++) {
+    strip.setPixelColor(i, strip.Color(255,10,0)); //Q2
+    strip.setPixelColor(i - barSize, strip.Color(0,0,0)); //Q2
+
+    strip.setPixelColor(stripLength - i - 1, strip.Color(255,10,0)); //Q3
+    strip.setPixelColor(stripLength - i - 1 + barSize, strip.Color(0,0,0)); //Q3
+    
+    updateRainbow();
+    strip.show();                          
+    delay(40);                           
+  }
+
+  for(int i = stripQuad * 2; i > 0; i--) {
+    strip.setPixelColor(i, strip.Color(0,0,0)); //Q2
+    strip.setPixelColor(i - barSize, strip.Color(255,10,0)); //Q2
+
+    strip.setPixelColor(stripLength - i - 1, strip.Color(0,0,0)); //Q3
+    strip.setPixelColor(stripLength - i - 1 + barSize, strip.Color(255,10,0)); //Q3
+    
+    updateRainbow();
+    strip.show();                          
+    delay(40);                           
+  }
 }
