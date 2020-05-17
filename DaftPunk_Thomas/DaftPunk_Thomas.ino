@@ -166,7 +166,7 @@ void visorSequenceC(Adafruit_NeoPixel strip) {
   int stripQuad = strip.numPixels()/4;
   visorStrip.begin();
   
-  for(int i = 0; i < stripQuad * 2; i++) {
+  for(int i = barSize; i < stripQuad * 2; i++) {
     strip.setPixelColor(i, strip.Color(255,10,0)); //Q2
     strip.setPixelColor(i - barSize, strip.Color(0,0,0)); //Q2
 
@@ -177,13 +177,13 @@ void visorSequenceC(Adafruit_NeoPixel strip) {
     strip.show();                          
     delay(40);                           
   }
-
-  for(int i = stripQuad * 2; i > 0; i--) {
-    strip.setPixelColor(i, strip.Color(0,0,0)); //Q2
+  
+  for(int i = stripQuad * 2; i >= barSize; i--) {
     strip.setPixelColor(i - barSize, strip.Color(255,10,0)); //Q2
+    strip.setPixelColor(i, strip.Color(0,0,0)); //Q2
 
+    strip.setPixelColor(stripLength - i - 1 + barSize, strip.Color(255,10, 0)); //Q3
     strip.setPixelColor(stripLength - i - 1, strip.Color(0,0,0)); //Q3
-    strip.setPixelColor(stripLength - i - 1 + barSize, strip.Color(255,10,0)); //Q3
     
     updateRainbow();
     strip.show();                          
