@@ -31,20 +31,27 @@ void setup() {
 }
 
 void loop() {
-  faceBars.clear();
-  faceSequenceStack(faceBars);
-  delay(1000);
-  faceSequenceSweep(faceBars);
-  delay(1000);
-  faceSequencePulse(faceBars);
-  delay(1000);
-  faceSequenceIdle(faceBars);
-  delay(5000);
+  int selection = random(0, 4);
+  
+  if(selection == 0) {
+    faceSequencePulse(faceBars);
+  }
+  else if (selection == 1) {
+    faceSequenceSweep(faceBars);
+  }
+  else if (selection == 2) {
+    faceSequenceStack(faceBars);
+  }
+  else {
+    faceSequenceIdle(faceBars);
+    delay(2500);
+  }
 }
 
 void faceSequenceStack(Adafruit_NeoPixel strip) {
   strip.begin();
-
+  strip.clear();
+  
   for(int i = 8; i > 0; i--) {
     for(int k = 8; k >= (8 - i); k--) {
       lightOneBar(k,255);
@@ -70,6 +77,8 @@ void faceSequenceStack(Adafruit_NeoPixel strip) {
   delay(1000);
 }
 void faceSequencePulse(Adafruit_NeoPixel strip) {
+  delay(250);
+  
   strip.begin();
   for(int i = 0; i < 250; i+= 10) {
     for(int k = 0; k < 8; k++){
@@ -89,11 +98,25 @@ void faceSequencePulse(Adafruit_NeoPixel strip) {
 }
 void faceSequenceSweep(Adafruit_NeoPixel strip) {
   strip.begin();
+  
   for(int i = 0; i < 8; i++) {
     lightOneBar(i, 255);
     delay(50);
   }
   delay(500);
+  
+  for(int i = 0; i < 8; i++) {
+    clearOneBar(i);
+    delay(50);
+  }
+  delay(500);
+
+  for(int i = 8; i >= 0; i--) {
+    lightOneBar(i, 255);
+    delay(50);
+  }
+  delay(500);
+  
   for(int i = 8; i >= 0; i--) {
     clearOneBar(i);
     delay(50);
